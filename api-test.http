@@ -1,0 +1,72 @@
+### -------------------- INVENTORY TESTS --------------------
+
+### GET all inventory items
+GET http://localhost:5210/api/inventory
+
+
+### GET specific inventory item by ID (replace 1 with actual ID)
+GET http://localhost:5210/api/inventory/2
+
+
+### POST new inventory item
+POST http://localhost:5210/api/inventory
+Content-Type: application/json
+
+{
+    "name": "Ladder",
+    "quantity": 4,
+    "location": "Warehouse D"
+}
+
+
+### PUT update existing inventory item (replace 1 with actual ID)
+PUT http://localhost:5210/api/inventory/2
+Content-Type: application/json
+
+{
+    "itemId": 11,
+    "name": "Updated Ladder",
+    "quantity": 10,
+    "location": "Warehouse Z"
+}
+
+
+### DELETE inventory item by ID (replace 1 with actual ID)
+DELETE http://localhost:5210/api/inventory/1
+
+
+
+### -------------------- ORDER TESTS --------------------
+
+### GET all orders
+GET http://localhost:5210/api/order
+
+
+### GET specific order by ID (replace 1 with actual ID)
+GET http://localhost:5210/api/order/1
+
+
+### POST new order
+POST http://localhost:5210/api/order
+Content-Type: application/json
+
+{
+    "customerName": "Samir",
+    "datePlaced": "2025-06-27T00:00:00"
+}
+
+
+### PUT update existing order (replace 1 with actual ID)
+PUT http://localhost:5210/api/order/1
+Content-Type: application/json
+
+{
+    "orderId": 1,
+    "customerName": "Updated Samir",
+    "datePlaced": "2025-06-28T00:00:00"
+}
+
+
+### DELETE order by ID (replace 1 with actual ID)
+DELETE http://localhost:5210/api/order/1
+### -------------------- ORDER ITEM TESTS --------------------

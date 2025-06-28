@@ -1,0 +1,41 @@
+using LogiTrack;              // Gives access to your LogiTrack namespace, like LogiTrackContext
+using LogiTrack.Models;       // Gives access to your InventoryItem and Order classes
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();   // ✅ Adds support for API controllers
+var app = builder.Build();
+
+// Database test logic added here
+using (var context = new LogiTrackContext())
+{
+    // Check if the InventoryItems table has any data
+    if (!context.InventoryItems.Any())
+    {
+        // Add a new InventoryItem to the database
+        context.InventoryItems.Add(new InventoryItem
+        {
+            Name = "Pallet Jack",
+            Quantity = 12,
+            Location = "Warehouse A"
+        });
+
+        // Save changes to the database
+        context.SaveChanges();
+    }
+
+    // Retrieve all items from the InventoryItems table
+    var items = context.InventoryItems.ToList();
+
+    // Loop through the items and print their details
+    foreach (var item in items)
+    {
+        item.DisplayInfo();
+    }
+}
+
+
+app.MapControllers();   // ✅ Tells ASP.NET Core to listen for routes defined in your controllers
+
+
+
+app.Run();

@@ -1,0 +1,23 @@
+using LogiTrack.Models;
+
+namespace LogiTrack
+{
+    public static class DbInitializer
+    {
+        public static void Seed(LogiTrackContext context)
+        {
+            // Check if InventoryItems table has data
+            if (!context.InventoryItems.Any())
+            {
+                context.InventoryItems.Add(new InventoryItem
+                {
+                    Name = "Pallet Jack",
+                    Quantity = 12,
+                    Location = "Warehouse A"
+                });
+
+                context.SaveChanges();
+            }
+        }
+    }
+}

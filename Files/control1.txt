@@ -1,0 +1,29 @@
+using Microsoft.AspNetCore.Mvc;
+using LogiTrack.Models;
+
+namespace LogiTrack.Controllers
+{
+    [ApiController]                           // Marks this as a Web API controller
+    [Route("api/[controller]")]               // Route will be: api/inventory
+    public class InventoryController : ControllerBase
+    {
+        private readonly LogiTrackContext _context;
+
+        // Constructor to inject the database context
+        public InventoryController()
+        {
+            _context = new LogiTrackContext();
+        }
+
+        // GET: api/inventory
+        [HttpGet]
+public ActionResult<IEnumerable<InventoryItem>> GetInventory()
+{
+    Console.WriteLine("GET /api/inventory was called ✅");
+
+    var items = _context.InventoryItems.ToList();
+    return Ok(items);
+}
+
+    }
+}

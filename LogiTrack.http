@@ -1,0 +1,107 @@
+### -------------------- INVENTORY TESTS --------------------
+
+### GET all inventory items
+GET http://localhost:5210/api/inventory
+
+
+### GET specific inventory item by ID (replace 1 with actual ID)
+GET http://localhost:5210/api/inventory/1
+
+
+### POST new inventory item
+POST http://localhost:5210/api/inventory
+Content-Type: application/json
+
+{
+    "name": "Ladder",
+    "quantity": 4,
+    "location": "Warehouse D",
+    "orderId": null   // Or provide valid OrderId if linking to an order
+}
+
+
+### PUT update existing inventory item (replace 1 with actual ID)
+PUT http://localhost:5210/api/inventory/1
+Content-Type: application/json
+
+{
+    "itemId": 1,
+    "name": "Updated Ladder",
+    "quantity": 10,
+    "location": "Warehouse Z",
+    "orderId": 1    // Provide valid OrderId or null
+}
+
+
+### DELETE inventory item by ID (replace 1 with actual ID)
+DELETE http://localhost:5210/api/inventory/1
+
+
+
+### -------------------- ORDER TESTS --------------------
+
+### GET all orders
+GET http://localhost:5210/api/order
+
+
+### GET specific order by ID (replace 1 with actual ID)
+GET http://localhost:5210/api/order/1
+
+
+### POST new order (provide valid CustomerId)
+POST http://localhost:5210/api/order
+Content-Type: application/json
+
+{
+    "customerId": 1,
+    "datePlaced": "2025-06-28T00:00:00"
+}
+
+
+### PUT update existing order (replace 1 with actual ID)
+PUT http://localhost:5210/api/order/1
+Content-Type: application/json
+
+{
+    "orderId": 1,
+    "customerId": 1,
+    "datePlaced": "2025-06-30T00:00:00"
+}
+
+
+### DELETE order by ID (replace 1 with actual ID)
+DELETE http://localhost:5210/api/order/1
+
+
+
+### -------------------- CUSTOMER TESTS --------------------
+
+### GET all customers
+GET http://localhost:5210/api/customer
+
+
+### GET specific customer by ID (replace 1 with actual ID)
+GET http://localhost:5210/api/customer/1
+
+
+### POST new customer
+POST http://localhost:5210/api/customer
+Content-Type: application/json
+
+{
+    "name": "Samir"
+}
+
+
+### PUT update existing customer (replace 1 with actual ID)
+PUT http://localhost:5210/api/customer/1
+Content-Type: application/json
+
+{
+    "customerId": 1,
+    "name": "Updated Samir"
+}
+
+
+### DELETE customer by ID (replace 1 with actual ID)
+DELETE http://localhost:5210/api/customer/1

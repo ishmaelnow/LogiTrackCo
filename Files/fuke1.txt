@@ -1,0 +1,13 @@
+using LogiTrack;  // Gives access to TestRunner class defined under the LogiTrack namespace
+
+var builder = WebApplication.CreateBuilder(args);
+// Creates a builder for the web app — required setup for ASP.NET Core, even if we're not building full API routes yet
+
+var app = builder.Build();
+// Builds the app object — prepares the app for running
+
+TestRunner.RunTests();
+// Runs the static method 'RunTests' from your TestRunner class — this contains your demo/test logic
+
+app.Run();
+// Starts the web app — technically runs the HTTP server, but your tests already printed output before this
