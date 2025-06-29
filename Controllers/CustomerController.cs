@@ -1,25 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using LogiTrack.Models;
 
 namespace LogiTrack.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // ✅ Require valid JWT for all endpoints
     public class CustomerController : ControllerBase
     {
         private readonly LogiTrackContext _context;
         private readonly ILogger<CustomerController> _logger;
 
-        // ✅ Constructor Injection for both DbContext and Logger
         public CustomerController(LogiTrackContext context, ILogger<CustomerController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        // ✅ Get all customers (with their orders)
+        // ✅ GET all customers (Admin only)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public ActionResult<IEnumerable<Customer>> GetCustomers()
         {
             _logger.LogInformation("GET /api/customer called ✅");
@@ -31,7 +33,7 @@ namespace LogiTrack.Controllers
             return Ok(customers);
         }
 
-        // ✅ Get specific customer by ID
+        // ✅ GET specific customer by ID (Authenticated users)
         [HttpGet("{id}")]
         public ActionResult<Customer> GetCustomerById(int id)
         {
@@ -50,8 +52,9 @@ namespace LogiTrack.Controllers
             return Ok(customer);
         }
 
-        // ✅ Create new customer
+        // ✅ POST create new customer (Admin only)
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult<Customer> CreateCustomer([FromBody] Customer newCustomer)
         {
             _logger.LogInformation("POST /api/customer called ✅");
@@ -62,8 +65,9 @@ namespace LogiTrack.Controllers
             return CreatedAtAction(nameof(GetCustomerById), new { id = newCustomer.CustomerId }, newCustomer);
         }
 
-        // ✅ Update existing customer
+        // ✅ PUT update existing customer (Admin only)
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult UpdateCustomer(int id, [FromBody] Customer updatedCustomer)
         {
             _logger.LogInformation($"PUT /api/customer/{id} called ✅");
@@ -87,8 +91,9 @@ namespace LogiTrack.Controllers
             return NoContent();
         }
 
-        // ✅ Delete customer with safeguard
+        // ✅ DELETE customer with safeguard (Admin only)
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult DeleteCustomer(int id)
         {
             _logger.LogInformation($"DELETE /api/customer/{id} called ✅");

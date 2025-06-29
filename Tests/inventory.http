@@ -1,0 +1,49 @@
+### -------------------- INVENTORY TESTS --------------------
+
+### 🔑 Replace this with a valid JWT from your login response
+@token=YOUR_JWT_TOKEN_HERE
+
+### ✅ GET all inventory items (Authenticated user)
+GET http://localhost:5210/api/inventory
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+
+### ✅ GET specific inventory item by ID
+GET http://localhost:5210/api/inventory/1
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+
+### ✅ POST create new inventory item (Authenticated user)
+POST http://localhost:5210/api/inventory
+Content-Type: application/json
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+{
+  "name": "Test Item",
+  "quantity": 5,
+  "location": "Test Warehouse"
+}
+
+
+### ✅ PUT update inventory item
+PUT http://localhost:5210/api/inventory/1
+Content-Type: application/json
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+{
+  "itemId": 1,
+  "name": "Updated Item",
+  "quantity": 10,
+  "location": "Updated Warehouse",
+  "orderId": null
+}
+
+
+### ✅ DELETE inventory item
+DELETE http://localhost:5210/api/inventory/1
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}

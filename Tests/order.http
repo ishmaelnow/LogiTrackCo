@@ -1,0 +1,47 @@
+### -------------------- ORDER TESTS --------------------
+
+### 🔑 Replace this with a valid JWT from your login response
+@token=YOUR_JWT_TOKEN_HERE
+
+### ✅ GET all orders (Admin only)
+GET http://localhost:5210/api/order
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+
+### ✅ GET specific order by ID (Authenticated user)
+GET http://localhost:5210/api/order/1
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+
+### ✅ POST create new order (Authenticated user)
+POST http://localhost:5210/api/order
+Content-Type: application/json
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+{
+  "customerId": 1,
+  "datePlaced": "2025-06-29T00:00:00"
+}
+
+
+### ✅ PUT update order (Admin only)
+PUT http://localhost:5210/api/order/1
+Content-Type: application/json
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}
+
+{
+  "orderId": 1,
+  "customerId": 1,
+  "datePlaced": "2025-06-30T00:00:00",
+  "items": []
+}
+
+
+### ✅ DELETE order (Admin only)
+DELETE http://localhost:5210/api/order/1
+X-API-KEY: supersecretkey123
+Authorization: Bearer {{token}}

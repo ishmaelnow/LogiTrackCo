@@ -1,0 +1,52 @@
+curl -X POST http://localhost:5210/api/auth/register -H "Content-Type: application/json" -H "X-API-KEY: supersecretkey123" -d "{\"username\":\"newuser\", \"password\":\"StrongPass123\", \"role\":\"Admin\"}"
+
+curl -X POST http://localhost:5210/api/auth/login -H "Content-Type: application/json" -H "X-API-KEY: supersecretkey123" -d "{\"username\":\"newuser\", \"password\":\"StrongPass123\"}"
+
+curl -X POST http://localhost:5210/api/auth/register ^
+-H "Content-Type: application/json" ^
+-H "X-API-KEY: supersecretkey123" ^
+-d "{\"username\":\"testuser\", \"password\":\"Test@123\", \"role\":\"Admin\"}"
+
+curl -X POST http://localhost:5210/api/auth/login ^
+-H "Content-Type: application/json" ^
+-H "X-API-KEY: supersecretkey123" ^
+-d "{\"username\":\"testuser\", \"password\":\"Test@123\"}"
+
+curl -X POST http://localhost:5210/api/auth/logout
+
+REM ✅ Get all inventory
+curl -X GET http://localhost:5210/api/inventory ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123" ^
+-H "Content-Type: application/json"
+
+REM ✅ Create inventory item
+curl -X POST http://localhost:5210/api/inventory ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123" ^
+-H "Content-Type: application/json" ^
+-d "{\"name\":\"New Item\", \"quantity\":10, \"location\":\"Warehouse A\"}"
+
+REM ✅ Get all orders (Admin only)
+curl -X GET http://localhost:5210/api/order ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123"
+
+REM ✅ Create order
+curl -X POST http://localhost:5210/api/order ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123" ^
+-H "Content-Type: application/json" ^
+-d "{\"customerId\":1, \"datePlaced\":\"2025-06-29T00:00:00\"}"
+
+REM ✅ Get all customers
+curl -X GET http://localhost:5210/api/customer ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123"
+
+REM ✅ Create customer
+curl -X POST http://localhost:5210/api/customer ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123" ^
+-H "Content-Type: application/json" ^
+-d "{\"name\":\"New Customer\"}"
