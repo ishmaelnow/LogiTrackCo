@@ -1,39 +1,80 @@
-### -------------------- INVENTORY TESTS --------------------
-
-### GET all inventory items
-GET http://localhost:5210/api/inventory
+### -------------------- AUTH TESTS --------------------
 
 
-### GET specific inventory item by ID (replace 1 with actual ID)
-GET http://localhost:5210/api/inventory/2
 
-
-### POST new inventory item
-POST http://localhost:5210/api/inventory
+### Register Request with API Key
+POST http://localhost:5210/api/auth/register
 Content-Type: application/json
+X-API-KEY: supersecretkey123
 
 {
-    "name": "Ladder",
-    "quantity": 4,
-    "location": "Warehouse D"
+    "username": "testuser",
+    "password": "Test@123"
 }
 
 
-### PUT update existing inventory item (replace 1 with actual ID)
-PUT http://localhost:5210/api/inventory/2
+### Register new user  without API Key
+POST http://localhost:5210/api/auth/register
 Content-Type: application/json
 
 {
-    "itemId": 11,
-    "name": "Updated Ladder",
-    "quantity": 10,
-    "location": "Warehouse Z"
+    "username": "testuser",
+    "password": "Test@123",
+    "role": "Admin"
 }
 
 
-### DELETE inventory item by ID (replace 1 with actual ID)
-DELETE http://localhost:5210/api/inventory/1
+### Login Request with API Key
+POST http://localhost:5210/api/auth/login
+Content-Type: application/json
+X-API-KEY: supersecretkey123
 
+{
+    "username": "testuser",
+    "password": "Test@123"
+}
+
+
+
+
+### Login with valid credentials (get JWT) no API Key
+POST http://localhost:5210/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "password": "Test@123"
+}
+
+
+### -------------------- CUSTOMER TESTS --------------------
+
+### GET all customers
+GET http://localhost:5210/api/customer
+
+### GET specific customer by ID
+GET http://localhost:5210/api/customer/1
+
+### Create a new customer
+POST http://localhost:5210/api/customer
+Content-Type: application/json
+X-API-KEY: supersecretkey123
+
+{
+    "name": "John Doe"
+}
+
+### Update existing customer
+PUT http://localhost:5210/api/customer/1
+Content-Type: application/json
+
+{
+    "customerId": 1,
+    "name": "Updated John Doe"
+}
+
+### Delete customer by ID
+DELETE http://localhost:5210/api/customer/1
 
 
 ### -------------------- ORDER TESTS --------------------
@@ -41,32 +82,63 @@ DELETE http://localhost:5210/api/inventory/1
 ### GET all orders
 GET http://localhost:5210/api/order
 
-
-### GET specific order by ID (replace 1 with actual ID)
+### GET specific order by ID
 GET http://localhost:5210/api/order/1
 
-
-### POST new order
+### Create new order (replace customerId as needed)
 POST http://localhost:5210/api/order
 Content-Type: application/json
 
 {
-    "customerName": "Samir",
-    "datePlaced": "2025-06-27T00:00:00"
+    "customerId": 1,
+    "datePlaced": "2025-06-28T00:00:00"
 }
 
-
-### PUT update existing order (replace 1 with actual ID)
+### Update existing order
 PUT http://localhost:5210/api/order/1
 Content-Type: application/json
 
 {
     "orderId": 1,
-    "customerName": "Updated Samir",
-    "datePlaced": "2025-06-28T00:00:00"
+    "customerId": 1,
+    "datePlaced": "2025-06-29T00:00:00"
 }
 
-
-### DELETE order by ID (replace 1 with actual ID)
+### Delete order by ID
 DELETE http://localhost:5210/api/order/1
-### -------------------- ORDER ITEM TESTS --------------------
+
+
+### -------------------- INVENTORY TESTS --------------------
+
+### GET all inventory items
+GET http://localhost:5210/api/inventory
+
+### GET specific inventory item by ID
+GET http://localhost:5210/api/inventory/1
+
+### Create new inventory item (with API key)
+POST http://localhost:5210/api/inventory
+X-API-KEY: supersecretkey123
+Content-Type: application/json
+
+{
+    "name": "New Item",
+    "quantity": 10,
+    "location": "Warehouse X"
+}
+
+### Update inventory item
+PUT http://localhost:5210/api/inventory/1
+X-API-KEY: supersecretkey123
+Content-Type: application/json
+
+{
+    "itemId": 1,
+    "name": "Updated Item",
+    "quantity": 5,
+    "location": "Warehouse Y"
+}
+
+### Delete inventory item by ID
+DELETE http://localhost:5210/api/inventory/1
+X-API-KEY: supersecretkey123

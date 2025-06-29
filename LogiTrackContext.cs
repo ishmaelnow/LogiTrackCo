@@ -7,6 +7,8 @@ public class LogiTrackContext : DbContext
     public DbSet<InventoryItem> InventoryItems { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Customer> Customers { get; set; }   // ✅ New DbSet for Customer table
+    public DbSet<User> Users { get; set; }
+
 
     // ✅ Database connection string points to local SQLite file
     protected override void OnConfiguring(DbContextOptionsBuilder options)

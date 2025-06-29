@@ -9,30 +9,33 @@ namespace LogiTrack.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly LogiTrackContext _context;
+        private readonly ILogger<CustomerController> _logger;
 
-        public CustomerController()
+        // ✅ Constructor Injection for both DbContext and Logger
+        public CustomerController(LogiTrackContext context, ILogger<CustomerController> logger)
         {
-            _context = new LogiTrackContext();
+            _context = context;
+            _logger = logger;
         }
 
-        // ✅ Get all customers (optional: include their orders)
+        // ✅ Get all customers (with their orders)
         [HttpGet]
         public ActionResult<IEnumerable<Customer>> GetCustomers()
         {
-            Console.WriteLine("GET /api/customer was called ✅");
+            _logger.LogInformation("GET /api/customer called ✅");
 
             var customers = _context.Customers
-                .Include(c => c.Orders)  // Include related orders if desired
+                .Include(c => c.Orders)
                 .ToList();
 
             return Ok(customers);
         }
 
-        // ✅ Get a specific customer by ID (optional: include their orders)
+        // ✅ Get specific customer by ID
         [HttpGet("{id}")]
         public ActionResult<Customer> GetCustomerById(int id)
         {
-            Console.WriteLine($"GET /api/customer/{id} was called ✅");
+            _logger.LogInformation($"GET /api/customer/{id} called ✅");
 
             var customer = _context.Customers
                 .Include(c => c.Orders)
@@ -40,17 +43,18 @@ namespace LogiTrack.Controllers
 
             if (customer == null)
             {
+                _logger.LogWarning($"Customer with ID {id} not found ❌");
                 return NotFound();
             }
 
             return Ok(customer);
         }
 
-        // ✅ Create a new customer
+        // ✅ Create new customer
         [HttpPost]
         public ActionResult<Customer> CreateCustomer([FromBody] Customer newCustomer)
         {
-            Console.WriteLine("POST /api/customer was called ✅");
+            _logger.LogInformation("POST /api/customer called ✅");
 
             _context.Customers.Add(newCustomer);
             _context.SaveChanges();
@@ -58,35 +62,36 @@ namespace LogiTrack.Controllers
             return CreatedAtAction(nameof(GetCustomerById), new { id = newCustomer.CustomerId }, newCustomer);
         }
 
-        // ✅ Update an existing customer
+        // ✅ Update existing customer
         [HttpPut("{id}")]
         public ActionResult UpdateCustomer(int id, [FromBody] Customer updatedCustomer)
         {
-            Console.WriteLine($"PUT /api/customer/{id} was called ✅");
+            _logger.LogInformation($"PUT /api/customer/{id} called ✅");
 
             if (id != updatedCustomer.CustomerId)
             {
+                _logger.LogWarning("ID mismatch during update ❌");
                 return BadRequest("ID mismatch.");
             }
 
             var existingCustomer = _context.Customers.Find(id);
             if (existingCustomer == null)
             {
+                _logger.LogWarning($"Customer with ID {id} not found ❌");
                 return NotFound();
             }
 
             existingCustomer.Name = updatedCustomer.Name;
-
             _context.SaveChanges();
 
             return NoContent();
         }
 
-        // ✅ Delete a customer by ID
+        // ✅ Delete customer with safeguard
         [HttpDelete("{id}")]
         public ActionResult DeleteCustomer(int id)
         {
-            Console.WriteLine($"DELETE /api/customer/{id} was called ✅");
+            _logger.LogInformation($"DELETE /api/customer/{id} called ✅");
 
             var customer = _context.Customers
                 .Include(c => c.Orders)
@@ -94,12 +99,13 @@ namespace LogiTrack.Controllers
 
             if (customer == null)
             {
+                _logger.LogWarning($"Customer with ID {id} not found ❌");
                 return NotFound();
             }
 
-            // Optional: Prevent deletion if they have orders (basic safeguard)
             if (customer.Orders.Any())
             {
+                _logger.LogWarning($"Attempted to delete customer {id} with active orders ❌");
                 return BadRequest("Cannot delete customer with existing orders.");
             }
 
