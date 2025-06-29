@@ -2,10 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using LogiTrack.Models;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace LogiTrack.Controllers
 {
@@ -23,29 +19,29 @@ namespace LogiTrack.Controllers
             _logger = logger;
         }
 
-        // ✅ Get all customers (Admin only)
+        // ✅ GET all customers (Admin only)
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public ActionResult<IEnumerable<Customer>> GetCustomers()
         {
             _logger.LogInformation("GET /api/customer called ✅");
 
-            var customers = await _context.Customers
+            var customers = _context.Customers
                 .Include(c => c.Orders)
-                .ToListAsync();
+                .ToList();
 
             return Ok(customers);
         }
 
-        // ✅ Get specific customer by ID (Authenticated users)
+        // ✅ GET specific customer by ID (Authenticated users)
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomerById(int id)
+        public ActionResult<Customer> GetCustomerById(int id)
         {
             _logger.LogInformation($"GET /api/customer/{id} called ✅");
 
-            var customer = await _context.Customers
+            var customer = _context.Customers
                 .Include(c => c.Orders)
-                .FirstOrDefaultAsync(c => c.CustomerId == id);
+                .FirstOrDefault(c => c.CustomerId == id);
 
             if (customer == null)
             {
@@ -56,23 +52,23 @@ namespace LogiTrack.Controllers
             return Ok(customer);
         }
 
-        // ✅ Create new customer (Admin only)
+        // ✅ POST create new customer (Admin only)
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<Customer>> CreateCustomer([FromBody] Customer newCustomer)
+        public ActionResult<Customer> CreateCustomer([FromBody] Customer newCustomer)
         {
             _logger.LogInformation("POST /api/customer called ✅");
 
             _context.Customers.Add(newCustomer);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return CreatedAtAction(nameof(GetCustomerById), new { id = newCustomer.CustomerId }, newCustomer);
         }
 
-        // ✅ Update existing customer (Admin only)
+        // ✅ PUT update existing customer (Admin only)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] Customer updatedCustomer)
+        public ActionResult UpdateCustomer(int id, [FromBody] Customer updatedCustomer)
         {
             _logger.LogInformation($"PUT /api/customer/{id} called ✅");
 
@@ -82,7 +78,7 @@ namespace LogiTrack.Controllers
                 return BadRequest("ID mismatch.");
             }
 
-            var existingCustomer = await _context.Customers.FindAsync(id);
+            var existingCustomer = _context.Customers.Find(id);
             if (existingCustomer == null)
             {
                 _logger.LogWarning($"Customer with ID {id} not found ❌");
@@ -90,21 +86,21 @@ namespace LogiTrack.Controllers
             }
 
             existingCustomer.Name = updatedCustomer.Name;
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return NoContent();
         }
 
-        // ✅ Delete customer by ID with safeguard (Admin only)
+        // ✅ DELETE customer with safeguard (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        public ActionResult DeleteCustomer(int id)
         {
             _logger.LogInformation($"DELETE /api/customer/{id} called ✅");
 
-            var customer = await _context.Customers
+            var customer = _context.Customers
                 .Include(c => c.Orders)
-                .FirstOrDefaultAsync(c => c.CustomerId == id);
+                .FirstOrDefault(c => c.CustomerId == id);
 
             if (customer == null)
             {
@@ -119,7 +115,7 @@ namespace LogiTrack.Controllers
             }
 
             _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return NoContent();
         }

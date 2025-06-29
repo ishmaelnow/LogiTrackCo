@@ -1,0 +1,53 @@
+### ---------------- AUTH ----------------
+
+POST http://localhost:5210/api/auth/register
+X-API-KEY: supersecretkey123
+Content-Type: application/json
+
+{
+  "username": "adminuser",
+  "password": "Test@123",
+  "role": "Admin"
+}
+
+###
+
+POST http://localhost:5210/api/auth/login
+X-API-KEY: supersecretkey123
+Content-Type: application/json
+
+{
+  "username": "adminuser",
+  "password": "Test@123"
+}
+
+### ---------------- INVENTORY ----------------
+
+GET http://localhost:5210/api/inventory
+Authorization: Bearer <TOKEN>
+X-API-KEY: supersecretkey123
+
+###
+
+POST http://localhost:5210/api/inventory
+Authorization: Bearer <TOKEN>
+X-API-KEY: supersecretkey123
+Content-Type: application/json
+
+{
+  "name": "Test Item",
+  "quantity": 5,
+  "location": "Warehouse B"
+}
+
+### ---------------- ORDER ----------------
+
+GET http://localhost:5210/api/order
+Authorization: Bearer <TOKEN>
+X-API-KEY: supersecretkey123
+
+### ---------------- CUSTOMER ----------------
+
+GET http://localhost:5210/api/customer
+Authorization: Bearer <TOKEN>
+X-API-KEY: supersecretkey123

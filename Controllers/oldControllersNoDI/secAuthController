@@ -20,11 +20,11 @@ namespace LogiTrack.Controllers
             _context = context;
         }
 
-        // ✅ Async Login with password verification
+        // ✅ Login endpoint with proper password verification
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginData)
+        public IActionResult Login([FromBody] LoginRequest loginData)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == loginData.Username);
+            var user = _context.Users.FirstOrDefault(u => u.Username == loginData.Username);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginData.Password, user.PasswordHash))
             {
@@ -35,11 +35,11 @@ namespace LogiTrack.Controllers
             return Ok(new { token });
         }
 
-        // ✅ Async Register with password hashing
+        // ✅ Register endpoint with password hashing
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest newUser)
+        public IActionResult Register([FromBody] RegisterRequest newUser)
         {
-            if (await _context.Users.AnyAsync(u => u.Username == newUser.Username))
+            if (_context.Users.Any(u => u.Username == newUser.Username))
             {
                 return BadRequest("Username already exists.");
             }
@@ -54,12 +54,12 @@ namespace LogiTrack.Controllers
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return Ok("User registered successfully.");
         }
 
-        // ✅ Token generator
+        // ✅ Token generator — pulls from environment variable
         private string GenerateJwtToken(User user)
         {
             var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")

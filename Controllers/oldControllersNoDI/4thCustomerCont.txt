@@ -1,0 +1,87 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using LogiTrack.Models;
+
+namespace LogiTrack.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize] // ✅ Require valid JWT for all endpoints
+    public class CustomerController : ControllerBase
+    {
+        private readonly LogiTrackContext _context;
+
+        public CustomerController(LogiTrackContext context)
+        {
+            _context = context;
+        }
+
+        // ✅ Get all customers - Admins only
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<IEnumerable<Customer>> GetCustomers()
+        {
+            var customers = _context.Customers.Include(c => c.Orders).ToList();
+            return Ok(customers);
+        }
+
+        // ✅ Get customer by ID - any authenticated user
+        [HttpGet("{id}")]
+        public ActionResult<Customer> GetCustomerById(int id)
+        {
+            var customer = _context.Customers.Include(c => c.Orders).FirstOrDefault(c => c.CustomerId == id);
+            if (customer == null)
+                return NotFound();
+
+            return Ok(customer);
+        }
+
+        // ✅ Create new customer - Admins only
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<Customer> CreateCustomer([FromBody] Customer newCustomer)
+        {
+            _context.Customers.Add(newCustomer);
+            _context.SaveChanges();
+
+            return CreatedAtAction(nameof(GetCustomerById), new { id = newCustomer.CustomerId }, newCustomer);
+        }
+
+        // ✅ Update customer - Admins only
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult UpdateCustomer(int id, [FromBody] Customer updatedCustomer)
+        {
+            if (id != updatedCustomer.CustomerId)
+                return BadRequest("ID mismatch.");
+
+            var existingCustomer = _context.Customers.Find(id);
+            if (existingCustomer == null)
+                return NotFound();
+
+            existingCustomer.Name = updatedCustomer.Name;
+            _context.SaveChanges();
+
+            return NoContent();
+        }
+
+        // ✅ Delete customer - Admins only, with safeguard for existing orders
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult DeleteCustomer(int id)
+        {
+            var customer = _context.Customers.Include(c => c.Orders).FirstOrDefault(c => c.CustomerId == id);
+            if (customer == null)
+                return NotFound();
+
+            if (customer.Orders.Any())
+                return BadRequest("Cannot delete customer with existing orders.");
+
+            _context.Customers.Remove(customer);
+            _context.SaveChanges();
+
+            return NoContent();
+        }
+    }
+}

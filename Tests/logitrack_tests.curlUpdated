@@ -1,0 +1,35 @@
+:: ---------------- AUTH ----------------
+
+curl -X POST http://localhost:5210/api/auth/register ^
+-H "Content-Type: application/json" ^
+-H "X-API-KEY: supersecretkey123" ^
+-d "{\"username\":\"adminuser\", \"password\":\"Test@123\", \"role\":\"Admin\"}"
+
+curl -X POST http://localhost:5210/api/auth/login ^
+-H "Content-Type: application/json" ^
+-H "X-API-KEY: supersecretkey123" ^
+-d "{\"username\":\"adminuser\", \"password\":\"Test@123\"}"
+
+:: ---------------- INVENTORY ----------------
+
+curl -X GET http://localhost:5210/api/inventory ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123"
+
+curl -X POST http://localhost:5210/api/inventory ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123" ^
+-H "Content-Type: application/json" ^
+-d "{\"name\":\"Test Item\", \"quantity\":5, \"location\":\"Warehouse B\"}"
+
+:: ---------------- ORDER ----------------
+
+curl -X GET http://localhost:5210/api/order ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123"
+
+:: ---------------- CUSTOMER ----------------
+
+curl -X GET http://localhost:5210/api/customer ^
+-H "Authorization: Bearer <TOKEN>" ^
+-H "X-API-KEY: supersecretkey123"

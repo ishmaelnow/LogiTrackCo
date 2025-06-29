@@ -1,0 +1,192 @@
+# 🔒 Auth Endpoints (API Key required)
+
+
+Window command to set token:  set TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...yourTokenHere
+
+
+### ✅ Register
+
+```powershell
+curl.exe -X POST http://localhost:5210/api/auth/register ^
+    -H "Content-Type: application/json" ^
+    -H "X-API-KEY: supersecretkey123" ^
+    -d "{\"username\":\"testuser\", \"password\":\"Test@123\", \"role\":\"Admin\"}"
+```
+
+### ✅ Login
+
+```powershell
+curl.exe -X POST http://localhost:5210/api/auth/login ^
+    -H "Content-Type: application/json" ^
+    -H "X-API-KEY: supersecretkey123" ^
+    -d "{\"username\":\"testuser\", \"password\":\"Test@123\"}"
+```
+
+# 🔒 Inventory Endpoints (API Key + Bearer Token required)
+_Replace `<TOKEN>` with your JWT token from login._
+
+### ✅ Get all inventory
+
+```powershell
+curl.exe -X GET http://localhost:5210/api/inventory ^
+    -H "Authorization: Bearer <TOKEN>" ^
+    -H "X-API-KEY: supersecretkey123"
+```
+
+### ✅ Create inventory item
+
+```powershell
+curl.exe -X POST http://localhost:5210/api/inventory ^
+    -H "Content-Type: application/json" ^
+    -H "Authorization: Bearer <TOKEN>" ^
+    -H "X-API-KEY: supersecretkey123" ^
+    -d "{\"name\":\"Test Item\", \"quantity\":10, \"location\":\"Warehouse Z\"}"
+```
+
+# 🔒 Order Endpoints (API Key + Bearer Token required)
+
+### ✅ Get all orders (Admin only)
+
+```powershell
+curl.exe -X GET http://localhost:5210/api/order ^
+    -H "Authorization: Bearer <TOKEN>" ^
+    -H "X-API-KEY: supersecretkey123"
+```
+
+### ✅ Create order
+
+```powershell
+curl.exe -X POST http://localhost:5210/api/order ^
+    -H "Content-Type: application/json" ^
+    -H "Authorization: Bearer <TOKEN>" ^
+    -H "X-API-KEY: supersecretkey123" ^
+    -d "{\"customerId\":1, \"datePlaced\":\"2025-06-28T00:00:00\"}"
+```
+
+# 🔒 Customer Endpoints (API Key + Bearer Token required)
+
+### ✅ Get all customers
+
+```powershell
+curl.exe -X GET http://localhost:5210/api/customer ^
+    -H "Authorization: Bearer <TOKEN>" ^
+    -H "X-API-KEY: supersecretkey123"
+```
+
+### ✅ Create customer
+
+```powershell
+curl.exe -X POST http://localhost:5210/api/customer ^
+    -H "Content-Type: application/json" ^
+    -H "Authorization: Bearer <TOKEN>" ^
+    -H "X-API-KEY: supersecretkey123" ^
+    -d "{\"name\":\"John Doe\"}"
+```
+# 🌐 HTTP File Examples
+
+Line to set token:  @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...yourTokenHere
+
+
+You can use the following `.http` file snippets with tools like [REST Client for VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) or [HTTPie](https://httpie.io/).
+
+## 🔒 Auth Endpoints (API Key required)
+
+### ✅ Register
+
+```http
+POST http://localhost:5210/api/auth/register
+Content-Type: application/json
+X-API-KEY: supersecretkey123
+
+{
+    "username": "testuser",
+    "password": "Test@123",
+    "role": "Admin"
+}
+```
+
+### ✅ Login
+
+```http
+POST http://localhost:5210/api/auth/login
+Content-Type: application/json
+X-API-KEY: supersecretkey123
+
+{
+    "username": "testuser",
+    "password": "Test@123"
+}
+```
+
+## 🔒 Inventory Endpoints (API Key + Bearer Token required)
+_Replace `{{TOKEN}}` with your JWT token from login._
+
+### ✅ Get all inventory
+
+```http
+GET http://localhost:5210/api/inventory
+Authorization: Bearer {{TOKEN}}
+X-API-KEY: supersecretkey123
+```
+
+### ✅ Create inventory item
+
+```http
+POST http://localhost:5210/api/inventory
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+X-API-KEY: supersecretkey123
+
+{
+    "name": "Test Item",
+    "quantity": 10,
+    "location": "Warehouse Z"
+}
+```
+
+## 🔒 Order Endpoints (API Key + Bearer Token required)
+
+### ✅ Get all orders (Admin only)
+
+```http
+GET http://localhost:5210/api/order
+Authorization: Bearer {{TOKEN}}
+X-API-KEY: supersecretkey123
+```
+
+### ✅ Create order
+
+```http
+POST http://localhost:5210/api/order
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+X-API-KEY: supersecretkey123
+
+{
+    "customerId": 1,
+    "datePlaced": "2025-06-28T00:00:00"
+}
+```
+
+## 🔒 Customer Endpoints (API Key + Bearer Token required)
+
+### ✅ Get all customers
+
+```http
+GET http://localhost:5210/api/customer
+Authorization: Bearer {{TOKEN}}
+X-API-KEY: supersecretkey123
+```
+
+### ✅ Create customer
+
+```http
+POST http://localhost:5210/api/customer
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+X-API-KEY: supersecretkey123
+
+{
+    "name": "John Doe"
+}
+```
