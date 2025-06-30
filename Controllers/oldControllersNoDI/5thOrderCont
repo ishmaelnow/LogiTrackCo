@@ -6,13 +6,12 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Security.Claims;
 
 namespace LogiTrack.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // Require valid JWT for all order endpoints
+    [Authorize] // ✅ Require valid JWT for all order endpoints
     public class OrderController : ControllerBase
     {
         private readonly LogiTrackContext _context;
@@ -24,49 +23,29 @@ namespace LogiTrack.Controllers
             _logger = logger;
         }
 
-        // ✅ Get all orders - Admin sees all, customers see their own
+        // ✅ Get all orders (Admin only)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             _logger.LogInformation("GET /api/order called ✅");
 
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
-            var username = User.FindFirst(ClaimTypes.Name)?.Value;
+            var orders = await _context.Orders
+                .Include(o => o.Items)
+                .ToListAsync();
 
-            if (role == "Admin")
-            {
-                var allOrders = await _context.Orders.Include(o => o.Items).ToListAsync();
-                return Ok(allOrders);
-            }
-            else
-            {
-                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Name == username);
-
-                if (customer == null)
-                {
-                    _logger.LogWarning($"Customer record not found for user: {username} ❌");
-                    return Unauthorized();
-                }
-
-                var customerOrders = await _context.Orders
-                    .Where(o => o.CustomerId == customer.CustomerId)
-                    .Include(o => o.Items)
-                    .ToListAsync();
-
-                return Ok(customerOrders);
-            }
+            return Ok(orders);
         }
 
-        // ✅ Get specific order - Admin or owner only
+        // ✅ Get specific order by ID (Authenticated users)
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrderById(int id)
         {
             _logger.LogInformation($"GET /api/order/{id} called ✅");
 
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
-            var username = User.FindFirst(ClaimTypes.Name)?.Value;
-
-            var order = await _context.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.Orders
+                .Include(o => o.Items)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null)
             {
@@ -74,22 +53,7 @@ namespace LogiTrack.Controllers
                 return NotFound();
             }
 
-            if (role == "Admin")
-            {
-                return Ok(order);
-            }
-            else
-            {
-                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Name == username);
-
-                if (customer == null || order.CustomerId != customer.CustomerId)
-                {
-                    _logger.LogWarning($"Unauthorized access attempt to order {id} by user {username} ❌");
-                    return Unauthorized();
-                }
-
-                return Ok(order);
-            }
+            return Ok(order);
         }
 
         // ✅ Create new order (Authenticated users)
@@ -111,7 +75,9 @@ namespace LogiTrack.Controllers
         {
             _logger.LogInformation($"DELETE /api/order/{id} called ✅");
 
-            var order = await _context.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.Orders
+                .Include(o => o.Items)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null)
             {
