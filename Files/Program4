@@ -72,7 +72,6 @@ app.MapControllers();
 
 app.Run();
 
-
 // ✅ Role seeding method to create roles if missing
 async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
 {

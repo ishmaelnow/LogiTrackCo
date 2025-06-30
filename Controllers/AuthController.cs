@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using LogiTrack.Models;
-using Microsoft.EntityFrameworkCore;
-using BCrypt.Net;
 
 namespace LogiTrack.Controllers
 {
@@ -13,54 +12,61 @@ namespace LogiTrack.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly LogiTrackContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IConfiguration _config;
 
-        public AuthController(LogiTrackContext context)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration config)
         {
-            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _config = config;
         }
 
-        // ✅ Async Login with password verification
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginData)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == loginData.Username);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginData.Password, user.PasswordHash))
-            {
-                return Unauthorized("Invalid username or password.");
-            }
-
-            var token = GenerateJwtToken(user);
-            return Ok(new { token });
-        }
-
-        // ✅ Async Register with password hashing
+        // ✅ Register endpoint with Identity flow and role assignment
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest newUser)
         {
-            if (await _context.Users.AnyAsync(u => u.Username == newUser.Username))
+            var user = new ApplicationUser
             {
-                return BadRequest("Username already exists.");
-            }
-
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
-
-            var user = new User
-            {
-                Username = newUser.Username,
-                PasswordHash = hashedPassword,
-                Role = newUser.Role
+                UserName = newUser.Username
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(user, newUser.Password);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            // Optional: Assign role if provided
+            if (!string.IsNullOrEmpty(newUser.Role))
+            {
+                await _userManager.AddToRoleAsync(user, newUser.Role);
+            }
 
             return Ok("User registered successfully.");
         }
 
-        // ✅ Token generator
-        private string GenerateJwtToken(User user)
+        // ✅ Login endpoint with Identity password check and JWT generation
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginData)
+        {
+            var user = await _userManager.FindByNameAsync(loginData.Username);
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginData.Password))
+            {
+                return Unauthorized("Invalid username or password.");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = GenerateJwtToken(user.UserName, roles.FirstOrDefault() ?? "User");
+
+            return Ok(new { token });
+        }
+
+        // ✅ JWT Token Generator
+        private string GenerateJwtToken(string username, string role)
         {
             var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
                 ?? throw new Exception("JWT_SECRET is missing from environment variables.");
@@ -70,8 +76,8 @@ namespace LogiTrack.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Role, role)
             };
 
             var token = new JwtSecurityToken(

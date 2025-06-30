@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LogiTrack")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8a7d1299d6355ef432cc92f9447d0c8c5972031")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+04832b9371b4930dc71aa6a7a70897f81f67ba9f")]
 [assembly: System.Reflection.AssemblyProductAttribute("LogiTrack")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LogiTrack")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

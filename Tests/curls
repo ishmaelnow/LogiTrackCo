@@ -50,3 +50,22 @@ curl -X POST http://localhost:5210/api/customer ^
 -H "X-API-KEY: supersecretkey123" ^
 -H "Content-Type: application/json" ^
 -d "{\"name\":\"New Customer\"}"
+
+
+
+Recommended Order:
+ Register Admin User
+
+ Register Regular User
+
+ Login as Admin → get token
+
+ Login as User → get token
+
+ Hit Admin-only route with Admin token → Should succeed
+
+ Hit Admin-only route with User token → Should fail (403)
+
+ Hit Public or User-allowed routes with both tokens → Should succeed
+
+ Try any route without token or API key → Should fail

@@ -1,0 +1,85 @@
+using LogiTrack.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace LogiTrack
+{
+    public static class DbInitializer
+    {
+        public static async Task SeedAsync(LogiTrackContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            await context.Database.MigrateAsync();  // Applies pending migrations
+
+            // ✅ Seed Roles
+            string[] roles = { "Admin", "User", "Manager" };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
+
+            // ✅ Create Default Admin (optional)
+            if (await userManager.FindByNameAsync("admin") == null)
+            {
+                var admin = new ApplicationUser { UserName = "admin" };
+                var result = await userManager.CreateAsync(admin, "Admin@123");
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "Admin");
+                    Console.WriteLine("✅ Default Admin created");
+                }
+            }
+
+            // ✅ Seed InventoryItems
+            if (!context.InventoryItems.Any())
+            {
+                context.InventoryItems.AddRange(
+                    new InventoryItem
+                    {
+                        Name = "Pallet Jack",
+                        Quantity = 12,
+                        Location = "Warehouse A"
+                    },
+                    new InventoryItem
+                    {
+                        Name = "Forklift",
+                        Quantity = 3,
+                        Location = "Warehouse B"
+                    }
+                );
+
+                await context.SaveChangesAsync();
+                Console.WriteLine("✅ Seeded InventoryItems");
+            }
+
+            // ✅ Seed Customer
+            if (!context.Customers.Any())
+            {
+                context.Customers.Add(new Customer { Name = "Samir" });
+                await context.SaveChangesAsync();
+                Console.WriteLine("✅ Seeded Customer");
+            }
+
+            // ✅ Seed Order for first customer
+            if (!context.Orders.Any())
+            {
+                var customer = context.Customers.FirstOrDefault();
+                if (customer != null)
+                {
+                    context.Orders.Add(new Order
+                    {
+                        CustomerId = customer.CustomerId,
+                        DatePlaced = DateTime.Now
+                    });
+
+                    await context.SaveChangesAsync();
+                    Console.WriteLine("✅ Seeded Orders");
+                }
+            }
+        }
+    }
+}

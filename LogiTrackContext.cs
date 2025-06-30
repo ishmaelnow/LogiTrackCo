@@ -1,35 +1,29 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using LogiTrack.Models;
 
-public class LogiTrackContext : DbContext
+public class LogiTrackContext : IdentityDbContext<ApplicationUser>
 {
-    // ✅ DbSets tell EF Core to create tables for these entity classes
+    // ✅ Regular tables for your domain models
     public DbSet<InventoryItem> InventoryItems { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<Customer> Customers { get; set; }   // ✅ New DbSet for Customer table
-    public DbSet<User> Users { get; set; }
+    public DbSet<Customer> Customers { get; set; }
 
+    // ✅ Required constructor for proper DI and EF Core design-time tools
+    public LogiTrackContext(DbContextOptions<LogiTrackContext> options) : base(options)
+    {
+    }
 
-    // ✅ Database connection string points to local SQLite file
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite("Data Source=logitrack.db");
-
-    // ✅ Configure relationships and delete behavior
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // One Order has many InventoryItems
-        // Each InventoryItem optionally belongs to one Order
+        // ✅ Ensures Identity-related tables and relationships are configured properly
+        base.OnModelCreating(modelBuilder);
+
+        // ✅ Configure relationship between InventoryItem and Order
         modelBuilder.Entity<InventoryItem>()
             .HasOne(i => i.Order)
             .WithMany(o => o.Items)
             .HasForeignKey(i => i.OrderId)
-            .OnDelete(DeleteBehavior.SetNull);
-
-        // ✅ One Customer has many Orders
-        modelBuilder.Entity<Order>()
-            .HasOne(o => o.Customer)
-            .WithMany(c => c.Orders)
-            .HasForeignKey(o => o.CustomerId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);  // If Order is deleted, nullify the reference in InventoryItem
     }
 }
